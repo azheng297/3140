@@ -1,11 +1,50 @@
 import java.io.IOException;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.Scanner;
 
 public class daysCalc {
-    public static void main(String[] args) throws IOException {
+    public static boolean isValidDate(String Date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/uuuu");
+        dateFormat.setLenient(false);
+        try {
+            dateFormat.parse(Date.trim());
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isValidShortDate(String Date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd");
+        dateFormat.setLenient(false);
+        try {
+            dateFormat.parse(Date.trim());
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    public static String returnYear(String date, LocalDate today) throws ParseException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/uuuu");
+        LocalDate selectDate = LocalDate.parse(date+"/"+today.getYear(), formatter);
+
+        if(selectDate.getMonthValue()>=today.getMonthValue()&&
+        selectDate.getDayOfMonth()>=today.getDayOfMonth()){
+            return date+"/"+today.getYear();
+        }else{
+            return date+"/"+(today.getYear()+1);
+        }
+    }
+
+    public static void main(String[] args) throws IOException, ParseException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/uuuu");
         LocalDate today = LocalDate.now(),
                 quiz1 = LocalDate.of(2022, 9, 14),
@@ -27,8 +66,24 @@ public class daysCalc {
             if (input.equals("Y") || input.equals("y")) {
                 System.out.println("Enter start date (MM/DD/YYYY): ");
                 String first = keyboard.nextLine();
+                if (isValidDate(first)) {
+
+                } else if (isValidShortDate(first)) {
+                    first = returnYear(first, today);
+                } else {
+                    System.out.println("Error.");
+                    continue;
+                }
                 System.out.println("Enter end date (MM/DD/YYYY): ");
                 String sec = keyboard.nextLine();
+                if (isValidDate(sec)) {
+
+                } else if (isValidShortDate(sec)) {
+                    sec = returnYear(sec, today);
+                } else {
+                    System.out.println("Error.");
+                    continue;
+                }
 
                 LocalDate date1 = LocalDate.parse(first, formatter), date2 = LocalDate.parse(sec, formatter);
 
@@ -82,7 +137,7 @@ public class daysCalc {
                 } else {
                     System.out.println("Error.");
                 }
-            }else if(input.equals("Q") || input.equals("q")){
+            } else if (input.equals("Q") || input.equals("q")) {
                 break;
             } else {
                 System.out.println("Error.");
